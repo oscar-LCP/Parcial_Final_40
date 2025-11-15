@@ -1,60 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
+/* Fondo con gradiente animado */
 body {
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
+    font-family: "Orbitron", sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px;
+    color: #fff;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 h1 {
     margin-bottom: 20px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Flexbox para centrar y estructurar el formulario */
+/* Card estilo glassmorphism */
 .login-form {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    width: 320px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 18px;
+    width: 330px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    gap: 25px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    transform: translateY(0);
+    animation: fadeUp 0.9s ease forwards;
 }
 
-/* Grid para organizar etiquetas e inputs */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Grid sencilla */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 15px;
 }
 
 .form-grid label {
-    font-weight: bold;
+    font-weight: 600;
+    color: #e2e8f0;
 }
 
 .form-grid input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    transition: 0.3s;
 }
 
-/* Flexbox para centrar botón */
+/* Efecto focus moderno */
+.form-grid input:focus {
+    outline: none;
+    border-color: #fff;
+    background: rgba(255,255,255,0.4);
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+
+/* Botón animado */
 .btn-container {
     display: flex;
     justify-content: center;
 }
 
 button {
-    padding: 10px 20px;
-    background: #0077cc;
-    color: white;
+    font-family: "Orbitron", sans-serif;
+    padding: 12px 25px;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
+    font-weight: 600;
+    background: #fff;
+    color: #4f46e5;
     cursor: pointer;
+    transition: 0.25s;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
 }
 
 button:hover {
-    background: #005fa3;
+    background: #e0e7ff;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.97);
 }
