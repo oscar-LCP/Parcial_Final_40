@@ -1,0 +1,27 @@
+<?php
+namespace App\Controllers;
+
+use App\Models\User;
+use Exception;
+
+class UsersController {
+
+    public function login($username, $password)
+    {
+        $row = User::where('userName', $username)
+            ->where('password', $password)
+            ->first();
+        if (empty($row)) {
+            throw new Exception("User null", 1);
+        }
+        return $row->toJson();
+    }
+
+    public function getUsers(){
+        $rows = User::all();
+        if(count($rows)==0){
+            return null;
+        }
+        return $rows->toJson();
+    }
+}
