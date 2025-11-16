@@ -1,16 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 
-/* Fondo con gradiente animado */
 body {
     font-family: "Orbitron", sans-serif;
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
-    background-size: 400% 400%;
+
+    background-image: 
+        url("../resources/aeropuerto.jpg"),
+        linear-gradient(135deg, #4f46e5, #06b6d4);
+
+    background-size: cover, 400% 400%;
+    background-position: center, center;
+    background-repeat: no-repeat;
+
     animation: gradientMove 12s ease infinite;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px;
     color: #fff;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: -1;
 }
 
 @keyframes gradientMove {
@@ -24,7 +40,6 @@ h1 {
     text-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Card estilo glassmorphism */
 .login-form {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -45,7 +60,6 @@ h1 {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Grid sencilla */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -66,7 +80,6 @@ h1 {
     transition: 0.3s;
 }
 
-/* Efecto focus moderno */
 .form-grid input:focus {
     outline: none;
     border-color: #fff;
@@ -74,7 +87,6 @@ h1 {
     box-shadow: 0 0 10px rgba(255,255,255,0.3);
 }
 
-/* Botón animado */
 .btn-container {
     display: flex;
     justify-content: center;
