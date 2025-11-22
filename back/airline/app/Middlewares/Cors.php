@@ -1,12 +1,13 @@
 <?php
+namespace App\Middlewares;
 
-use Slim\App;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as Handler;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Psr7\Response;
 
-return function (App $app) {
-    $app->options('/{routes:.+}', fn($req, $res) => $res);
-
-    $app->add(function (Request $request, $handler) {
+class Cors {
+    public function __invoke(Request $request, Handler $handler): ResponseInterface {
         $origin = $request->getHeaderLine('Origin') ?: '*';
         $response = $handler->handle($request);
         $response = $response
@@ -16,10 +17,14 @@ return function (App $app) {
             ->withHeader('Access-Control-Allow-Credentials', 'true');
 
         if ($request->getMethod() === 'OPTIONS') {
-            return $response->withStatus(200);
+            $response = new Response();
+            $response = $response->withStatus(200)
+                ->withHeader('Access-Control-Allow-Origin', $origin)
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+                ->withHeader('Access-Control-Allow-Credentials', 'true');
+            return $response;
         }
-
         return $response;
-    });
-
-};
+    }
+}
