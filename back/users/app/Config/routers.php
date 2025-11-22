@@ -1,19 +1,15 @@
 <?php
-use App\Repositories\UserRepository;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+namespace App\Config;
+
 use Slim\App;
-use Slim\Routing\RouteCollectorProxy;
+use App\Controllers\UsersController;
 
-return function (App $app) {
-    $app->get('/', function (Request $request, Response $response, $args) {
-        $response->getBody()->write("Hello world!");
-        return $response;
-    });
-
-    $app->post('/login', [UserRepository::class, 'login']);
-
-    $app->group('/users', function (RouteCollectorProxy $group) {
-        $group->get('/', [UserRepository::class, 'queryAllUsers']);
-    });
+return function(App $app) {
+    $app->post('/register', [UsersController::class, 'register']);
+    $app->post('/login', [UsersController::class, 'login']);
+    
+    // Rutas protegidas
+    $app->post('/logout', [UsersController::class, 'logout']);
+    $app->get('/users', [UsersController::class, 'listUsers']);
+    $app->put('/users/{id}', [UsersController::class, 'updateUser']);
 };
