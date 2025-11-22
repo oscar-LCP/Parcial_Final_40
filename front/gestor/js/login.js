@@ -8,7 +8,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const password = e.target.password.value;
 
     try {
-        const data = await fetch('http://127.0.0.1:8001/login', {
+        const data = await fetch('http://localhost:8001/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({email, password})

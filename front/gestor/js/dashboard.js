@@ -30,7 +30,7 @@ async function init() {
 
         document.getElementById('loadUsersBtn').addEventListener('click', async () => {
             try {
-                const users = await fetchAPI('http://127.0.0.1:8001/users', { method: 'GET' });
+                const users = await fetchAPI('http://localhost:8001/users', { method: 'GET' });
                 document.getElementById('usersList').innerText = JSON.stringify(users, null, 2);
             } catch (err) {
                 alert(err.message);
@@ -39,7 +39,7 @@ async function init() {
 
         document.getElementById('loadFlightsBtn').addEventListener('click', async () => {
             try {
-                const flights = await fetchAPI('http://127.0.0.1:8002/flights', { method: 'GET' });
+                const flights = await fetchAPI('http://localhost:8002/flights', { method: 'GET' });
                 document.getElementById('flightsList').innerText = JSON.stringify(flights, null, 2);
             } catch (err) {
                 alert(err.message);
@@ -48,7 +48,7 @@ async function init() {
 
         document.getElementById('loadNavesBtn').addEventListener('click', async () => {
             try {
-                const naves = await fetchAPI('http://127.0.0.1:8002/naves', { method: 'GET' });
+                const naves = await fetchAPI('http://localhost:8002/naves', { method: 'GET' });
                 document.getElementById('navesList').innerText = JSON.stringify(naves, null, 2);
             } catch (err) {
                 alert(err.message);
@@ -66,7 +66,7 @@ async function init() {
 
         document.getElementById('loadReservationsBtn').addEventListener('click', async () => {
             try {
-                const reservations = await fetchAPI('http://127.0.0.1:8002/reservations', { method: 'GET' });
+                const reservations = await fetchAPI('http://localhost:8002/reservations', { method: 'GET' });
                 document.getElementById('reservationsList').innerText = JSON.stringify(reservations, null, 2);
             } catch (err) {
                 alert(err.message);
