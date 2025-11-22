@@ -40,6 +40,7 @@ h1 {
     text-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* Ajuste para el formulario con id loginForm */
 .login-form {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -60,9 +61,10 @@ h1 {
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Estilizado las dos columnas de etiqueta e input en forma vertical */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Una columna para etiqueta y abajo input */
     gap: 15px;
 }
 
@@ -112,4 +114,11 @@ button:hover {
 
 button:active {
     transform: scale(0.97);
+}
+
+/* Mensaje de error */
+#error-message {
+    margin-top: -15px;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
