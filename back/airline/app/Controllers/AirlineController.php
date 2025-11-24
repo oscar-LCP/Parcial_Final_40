@@ -8,7 +8,7 @@ use App\Models\Flight;
 use App\Models\Reservation;
 
 class AirlineController {
-    // Naves
+    // ========== NAVES (Solo Administrador) ==========
     public function createNave(Request $request, Response $response) {
         $user = $request->getAttribute('user');
         if ($user->role !== 'administrador') {
@@ -59,7 +59,8 @@ class AirlineController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // Vuelos
+    // ========== VUELOS ==========
+    // Crear vuelo (Solo Administrador)
     public function createFlight(Request $request, Response $response) {
         $user = $request->getAttribute('user');
         if ($user->role !== 'administrador') {
@@ -71,21 +72,33 @@ class AirlineController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
+    // Listar vuelos (Administrador y Gestor pueden consultar)
     public function listFlights(Request $request, Response $response) {
         $user = $request->getAttribute('user');
-        if ($user->role !== 'administrador') {
+        // Tanto administrador como gestor pueden consultar vuelos
+        if (!in_array($user->role, ['administrador', 'gestor'])) {
             return $this->forbidden($response);
         }
+        
         $params = $request->getQueryParams();
         $query = Flight::query();
-        if (!empty($params['origin'])) $query->where('origin', $params['origin']);
-        if (!empty($params['destination'])) $query->where('destination', $params['destination']);
-        if (!empty($params['date'])) $query->whereDate('departure', $params['date']);
+        
+        if (!empty($params['origin'])) {
+            $query->where('origin', $params['origin']);
+        }
+        if (!empty($params['destination'])) {
+            $query->where('destination', $params['destination']);
+        }
+        if (!empty($params['date'])) {
+            $query->whereDate('departure', $params['date']);
+        }
+        
         $flights = $query->get();
         $response->getBody()->write(json_encode($flights));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
+    // Actualizar vuelo (Solo Administrador)
     public function updateFlight(Request $request, Response $response, array $args) {
         $user = $request->getAttribute('user');
         if ($user->role !== 'administrador') {
@@ -101,6 +114,7 @@ class AirlineController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
+    // Eliminar vuelo (Solo Administrador)
     public function deleteFlight(Request $request, Response $response, array $args) {
         $user = $request->getAttribute('user');
         if ($user->role !== 'administrador') {
@@ -115,22 +129,26 @@ class AirlineController {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // Reservas
+    // ========== RESERVAS (Solo Gestor) ==========
     public function createReservation(Request $request, Response $response) {
         $user = $request->getAttribute('user');
         if ($user->role !== 'gestor') {
             return $this->forbidden($response);
         }
+        
         $data = (array)$request->getParsedBody();
-        $data['user_id'] = $user->id;
+        
+        // Validar que el vuelo exista
         $flight = Flight::find($data['flight_id']);
         if (!$flight) {
             $response->getBody()->write(json_encode(['error' => 'Vuelo inexistente']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
+        
+        // Crear la reserva
         $reservation = Reservation::create($data);
         $response->getBody()->write(json_encode($reservation));
-        return $response->withHeader('Content-Type', 'application/json');
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function listReservations(Request $request, Response $response) {
@@ -138,9 +156,14 @@ class AirlineController {
         if ($user->role !== 'gestor') {
             return $this->forbidden($response);
         }
+        
         $params = $request->getQueryParams();
-        $query = Reservation::with('flight');
-        if (!empty($params['user_id'])) $query->where('user_id', $params['user_id']);
+        $query = Reservation::query();
+        
+        if (!empty($params['user_id'])) {
+            $query->where('user_id', $params['user_id']);
+        }
+        
         $reservations = $query->get();
         $response->getBody()->write(json_encode($reservations));
         return $response->withHeader('Content-Type', 'application/json');
@@ -151,16 +174,18 @@ class AirlineController {
         if ($user->role !== 'gestor') {
             return $this->forbidden($response);
         }
+        
         $reservation = Reservation::find($args['id']);
         if (!$reservation) {
             return $this->notFound($response);
         }
+        
         $reservation->update(['status' => 'cancelada']);
         $response->getBody()->write(json_encode(['message' => 'Reserva cancelada']));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    // Helpers
+    // ========== HELPERS ==========
     private function forbidden(Response $response): Response {
         $response->getBody()->write(json_encode(['error' => 'Acceso denegado']));
         return $response->withStatus(403)->withHeader('Content-Type', 'application/json');

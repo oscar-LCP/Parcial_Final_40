@@ -404,6 +404,30 @@ async function loadVuelos() {
             <h2>✈️ ${isAdmin ? 'Gestión de' : 'Consulta de'} Vuelos</h2>
             ${isAdmin ? '<button class="btn-primary" onclick="window.dashboard.openFlightModal()">+ Crear Vuelo</button>' : ''}
         </div>
+        
+        <!-- Filtros de búsqueda (Requerimiento 2.3) -->
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">🔍 Buscar Vuelos</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div class="form-group">
+                    <label>Origen</label>
+                    <input type="text" id="searchOrigin" placeholder="Ej: Bogotá" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                </div>
+                <div class="form-group">
+                    <label>Destino</label>
+                    <input type="text" id="searchDestination" placeholder="Ej: Medellín" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="searchDate" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <button class="btn-primary" onclick="window.dashboard.searchFlights()" style="width: 100%;">Buscar</button>
+                    <button class="btn-secondary" onclick="window.dashboard.clearSearchFlights()" style="width: 100%;">Limpiar</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="table-container">
             <div class="loading">Cargando vuelos...</div>
         </div>
@@ -411,52 +435,7 @@ async function loadVuelos() {
     
     try {
         const flights = await fetchAPI(`${API_AIRLINE}/flights`, { method: 'GET' });
-        
-        if (flights.length === 0) {
-            content.querySelector('.table-container').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">✈️</div>
-                    <p>No hay vuelos registrados</p>
-                </div>
-            `;
-            return;
-        }
-        
-        content.querySelector('.table-container').innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Origen</th>
-                        <th>Destino</th>
-                        <th>Salida</th>
-                        <th>Llegada</th>
-                        <th>Precio</th>
-                        <th>Nave ID</th>
-                        ${isAdmin ? '<th>Acciones</th>' : ''}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${flights.map(flight => `
-                        <tr>
-                            <td>${flight.id}</td>
-                            <td>${flight.origin}</td>
-                            <td>${flight.destination}</td>
-                            <td>${new Date(flight.departure).toLocaleString()}</td>
-                            <td>${new Date(flight.arrival).toLocaleString()}</td>
-                            <td>$${parseFloat(flight.price).toLocaleString()}</td>
-                            <td>${flight.nave_id}</td>
-                            ${isAdmin ? `
-                                <td class="actions">
-                                    <button class="btn-success btn-small" onclick="window.dashboard.editFlight(${flight.id})">Editar</button>
-                                    <button class="btn-danger btn-small" onclick="window.dashboard.deleteFlight(${flight.id})">Eliminar</button>
-                                </td>
-                            ` : ''}
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        displayFlights(flights, isAdmin);
     } catch (error) {
         content.querySelector('.table-container').innerHTML = `
             <div class="empty-state">
@@ -464,6 +443,89 @@ async function loadVuelos() {
             </div>
         `;
     }
+}
+
+async function searchFlights() {
+    const origin = document.getElementById('searchOrigin').value.trim();
+    const destination = document.getElementById('searchDestination').value.trim();
+    const date = document.getElementById('searchDate').value;
+    
+    const params = new URLSearchParams();
+    if (origin) params.append('origin', origin);
+    if (destination) params.append('destination', destination);
+    if (date) params.append('date', date);
+    
+    const content = document.getElementById('content');
+    content.querySelector('.table-container').innerHTML = '<div class="loading">Buscando vuelos...</div>';
+    
+    try {
+        const url = `${API_AIRLINE}/flights${params.toString() ? '?' + params.toString() : ''}`;
+        const flights = await fetchAPI(url, { method: 'GET' });
+        displayFlights(flights, currentRole === 'administrador');
+    } catch (error) {
+        content.querySelector('.table-container').innerHTML = `
+            <div class="empty-state">
+                <p style="color: #ff6b6b;">Error: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+function clearSearchFlights() {
+    document.getElementById('searchOrigin').value = '';
+    document.getElementById('searchDestination').value = '';
+    document.getElementById('searchDate').value = '';
+    loadVuelos();
+}
+
+function displayFlights(flights, isAdmin) {
+    const content = document.getElementById('content');
+    
+    if (flights.length === 0) {
+        content.querySelector('.table-container').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">✈️</div>
+                <p>No se encontraron vuelos</p>
+            </div>
+        `;
+        return;
+    }
+    
+    content.querySelector('.table-container').innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Salida</th>
+                    <th>Llegada</th>
+                    <th>Precio</th>
+                    <th>Nave ID</th>
+                    ${isAdmin ? '<th>Acciones</th>' : ''}
+                </tr>
+            </thead>
+            <tbody>
+                ${flights.map(flight => `
+                    <tr>
+                        <td>${flight.id}</td>
+                        <td>${flight.origin}</td>
+                        <td>${flight.destination}</td>
+                        <td>${new Date(flight.departure).toLocaleString()}</td>
+                        <td>${new Date(flight.arrival).toLocaleString()}</td>
+                        <td>${parseFloat(flight.price).toLocaleString()}</td>
+                        <td>${flight.nave_id}</td>
+                        ${isAdmin ? `
+                            <td class="actions">
+                                <button class="btn-success btn-small" onclick="window.dashboard.editFlight(${flight.id})">Editar</button>
+                                <button class="btn-danger btn-small" onclick="window.dashboard.deleteFlight(${flight.id})">Eliminar</button>
+                            </td>
+                        ` : ''}
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
 }
 
 async function openFlightModal(flightId = null) {
@@ -733,9 +795,17 @@ async function cancelReservation(reservationId) {
     }
 }
 
-function logout() {
-    localStorage.clear();
-    window.location.href = 'index.html';
+async function logout() {
+    try {
+        // 1.4 - Llamar al backend para eliminar el token
+        await fetchAPI(`${API_USERS}/logout`, { method: 'POST' });
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+    } finally {
+        // Limpiar localStorage y redirigir
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
 }
 
 // Exponer funciones globalmente para los onclick
@@ -748,6 +818,8 @@ window.dashboard = {
     openFlightModal,
     editFlight: (id) => openFlightModal(id),
     deleteFlight,
+    searchFlights,
+    clearSearchFlights,
     openReservationModal,
     cancelReservation
 };
