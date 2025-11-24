@@ -1,8 +1,19 @@
 <?php
+// Configurar CORS ANTES de cualquier otra cosa
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin');
+header('Access-Control-Max-Age: 86400');
+
+// Manejar peticiones OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use App\Middlewares\Cors;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -10,16 +21,25 @@ require __DIR__ . '/../app/Config/database.php';
 
 $app = AppFactory::create();
 
-$app->add(new Cors());
+// Middleware para parsear JSON del body
+$app->addBodyParsingMiddleware();
 
+// Middleware para routing
+$app->addRoutingMiddleware();
+
+// Middleware para añadir headers CORS a todas las respuestas
+$app->add(function (Request $request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', '*')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+});
+
+// Middleware de autenticación
 $app->add(function (Request $request, $handler) {
     $publicRoutes = ['/register', '/login'];
     $path = $request->getUri()->getPath();
-
-    if ($request->getMethod() === 'OPTIONS') {
-        $response = new \Slim\Psr7\Response();
-        return $response->withStatus(200);
-    }
 
     if (!in_array($path, $publicRoutes)) {
         $headers = $request->getHeader('Authorization');
@@ -44,6 +64,7 @@ $app->add(function (Request $request, $handler) {
     return $handler->handle($request);
 });
 
-require __DIR__ . '/../app/Config/routers.php'($app);
+$routes = require __DIR__ . '/../app/Config/routers.php';
+$routes($app);
 
 $app->run();
