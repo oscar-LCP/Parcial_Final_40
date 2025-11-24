@@ -1,24 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
 
+/* ========== ESTILOS GENERALES ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: "Orbitron", sans-serif;
-
     background-image: 
         url("../resources/aeropuerto.jpg"),
         linear-gradient(135deg, #aeaaf1, #c0e3e9);
-
     background-size: cover, 400% 400%;
     background-position: center, center;
     background-repeat: no-repeat;
-
     animation: gradientMove 12s ease infinite;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px;
     color: #fff;
     position: relative;
+    min-height: 100vh;
 }
 
 body::before {
@@ -35,12 +39,11 @@ body::before {
     100% { background-position: 0% 50%; }
 }
 
-h1 {
-    margin-bottom: 20px;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+h1, h2 {
+    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* Ajuste para el formulario con id loginForm */
+/* ========== LOGIN FORM ========== */
 .login-form {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -52,7 +55,6 @@ h1 {
     gap: 25px;
     box-shadow: 0 0 20px rgba(0,0,0,0.2);
     border: 1px solid rgba(255,255,255,0.2);
-    transform: translateY(0);
     animation: fadeUp 0.9s ease forwards;
 }
 
@@ -61,10 +63,9 @@ h1 {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilizado las dos columnas de etiqueta e input en forma vertical */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Una columna para etiqueta y abajo input */
+    grid-template-columns: 1fr;
     gap: 15px;
 }
 
@@ -73,25 +74,34 @@ h1 {
     color: #e2e8f0;
 }
 
-.form-grid input {
+.form-grid input,
+.form-grid select {
     padding: 10px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.3);
     background: rgba(255,255,255,0.25);
     color: #fff;
     transition: 0.3s;
+    font-family: "Orbitron", sans-serif;
 }
 
-.form-grid input:focus {
+.form-grid input:focus,
+.form-grid select:focus {
     outline: none;
     border-color: #fff;
     background: rgba(255,255,255,0.4);
     box-shadow: 0 0 10px rgba(255,255,255,0.3);
 }
 
+.form-grid select option {
+    background: #2d3748;
+    color: #fff;
+}
+
 .btn-container {
     display: flex;
     justify-content: center;
+    gap: 10px;
 }
 
 button {
@@ -116,9 +126,344 @@ button:active {
     transform: scale(0.97);
 }
 
-/* Mensaje de error */
 #error-message {
     margin-top: -15px;
     font-weight: 600;
     font-size: 0.9rem;
+    color: #ff6b6b;
+}
+
+/* ========== DASHBOARD STYLES ========== */
+.dashboard-body {
+    padding: 0;
+    align-items: stretch;
+}
+
+.dashboard-header {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px 40px;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-role {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background: rgba(255, 100, 100, 0.8);
+    color: #fff;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 100, 100, 1);
+}
+
+/* ========== NAVIGATION TABS ========== */
+.dashboard-nav {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 40px;
+}
+
+.nav-tabs {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 5px;
+    list-style: none;
+}
+
+.nav-tab {
+    padding: 15px 25px;
+    cursor: pointer;
+    transition: 0.3s;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+}
+
+.nav-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-tab.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-bottom-color: #fff;
+}
+
+/* ========== MAIN CONTENT ========== */
+.dashboard-main {
+    width: 100%;
+    flex: 1;
+    padding: 40px;
+}
+
+.content-area {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.btn-primary {
+    background: rgba(100, 200, 255, 0.9);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: rgba(100, 200, 255, 1);
+}
+
+.btn-secondary {
+    background: rgba(150, 150, 150, 0.8);
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background: rgba(150, 150, 150, 1);
+}
+
+.btn-danger {
+    background: rgba(255, 100, 100, 0.8);
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+.btn-danger:hover {
+    background: rgba(255, 100, 100, 1);
+}
+
+.btn-success {
+    background: rgba(100, 200, 100, 0.8);
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+.btn-success:hover {
+    background: rgba(100, 200, 100, 1);
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+/* ========== TABLES ========== */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+tbody tr {
+    transition: 0.2s;
+}
+
+tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ========== FORMS IN MODAL ========== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: rgba(30, 30, 50, 0.95);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 18px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.btn-close {
+    background: transparent;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-family: "Orbitron", sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #fff;
+    background: rgba(255,255,255,0.25);
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+/* ========== LOADING ========== */
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .dashboard-header,
+    .dashboard-nav,
+    .dashboard-main {
+        padding: 20px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .nav-tabs {
+        flex-wrap: wrap;
+    }
+
+    table {
+        font-size: 0.85rem;
+    }
+
+    th, td {
+        padding: 10px;
+    }
 }
