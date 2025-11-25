@@ -1,7 +1,5 @@
-/*@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');*/
 @import url('https://fonts.googleapis.com/css2?family=Science+Gothic:wght@100..900&display=swap');
 
-/* ========== ESTILOS GENERALES ========== */
 * {
     margin: 0;
     padding: 0;
@@ -44,7 +42,6 @@ h1, h2 {
     text-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* ========== LOGIN FORM ========== */
 .login-form {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
@@ -99,7 +96,6 @@ h1, h2 {
     color: #fff;
 }
 
-/* Estilos para select en general */
 select {
     color: #fff !important;
     background: rgba(255,255,255,0.25) !important;
@@ -111,7 +107,6 @@ select option {
     padding: 10px;
 }
 
-/* Para navegadores webkit (Chrome, Safari, Edge) */
 select::-webkit-scrollbar {
     width: 10px;
 }
@@ -164,7 +159,6 @@ button:active {
     color: #ff6b6b;
 }
 
-/* ========== DASHBOARD STYLES ========== */
 .dashboard-body {
     padding: 0;
     align-items: stretch;
@@ -214,7 +208,6 @@ button:active {
     background: rgba(255, 100, 100, 1);
 }
 
-/* ========== NAVIGATION TABS ========== */
 .dashboard-nav {
     width: 100%;
     background: rgba(255, 255, 255, 0.05);
@@ -248,7 +241,6 @@ button:active {
     border-bottom-color: #fff;
 }
 
-/* ========== MAIN CONTENT ========== */
 .dashboard-main {
     width: 100%;
     flex: 1;
@@ -322,7 +314,6 @@ button:active {
     font-size: 0.8rem;
 }
 
-/* ========== TABLES ========== */
 .table-container {
     overflow-x: auto;
     margin-top: 20px;
@@ -366,7 +357,6 @@ tbody tr:hover {
     gap: 8px;
 }
 
-/* ========== FORMS IN MODAL ========== */
 .modal {
     display: none;
     position: fixed;
@@ -452,7 +442,6 @@ tbody tr:hover {
     background: rgba(255,255,255,0.25);
 }
 
-/* ========== EMPTY STATE ========== */
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -464,7 +453,6 @@ tbody tr:hover {
     margin-bottom: 20px;
 }
 
-/* ========== LOADING ========== */
 .loading {
     text-align: center;
     padding: 40px;
@@ -472,7 +460,6 @@ tbody tr:hover {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
     .dashboard-header,
     .dashboard-nav,

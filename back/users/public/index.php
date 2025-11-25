@@ -1,11 +1,9 @@
 <?php
-// Configurar CORS ANTES de cualquier otra cosa
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, Origin');
 header('Access-Control-Max-Age: 86400');
 
-// Manejar peticiones OPTIONS (preflight)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -21,13 +19,10 @@ require __DIR__ . '/../app/Config/database.php';
 
 $app = AppFactory::create();
 
-// Middleware para parsear JSON del body
 $app->addBodyParsingMiddleware();
 
-// Middleware para routing
 $app->addRoutingMiddleware();
 
-// Middleware para añadir headers CORS a todas las respuestas
 $app->add(function (Request $request, $handler) {
     $response = $handler->handle($request);
     return $response
@@ -36,7 +31,6 @@ $app->add(function (Request $request, $handler) {
         ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
 });
 
-// Middleware de autenticación
 $app->add(function (Request $request, $handler) {
     $publicRoutes = ['/register', '/login'];
     $path = $request->getUri()->getPath();

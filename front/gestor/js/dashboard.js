@@ -19,7 +19,7 @@ async function init() {
     
     // Mostrar rol en el header
     document.getElementById('userRole').textContent = 
-        currentRole === 'administrador' ? '👤 Administrador' : '👤 Gestor';
+        currentRole === 'administrador' ? 'Administrador' : 'Gestor';
 
     // Configurar navegación según rol
     setupNavigation();
@@ -34,9 +34,9 @@ function setupNavigation() {
     if (currentRole === 'administrador') {
         nav.innerHTML = `
             <ul class="nav-tabs">
-                <li class="nav-tab active" data-section="usuarios">👥 Usuarios</li>
-                <li class="nav-tab" data-section="vuelos">✈️ Vuelos</li>
-                <li class="nav-tab" data-section="naves">🛩️ Naves</li>
+                <li class="nav-tab active" data-section="usuarios">Usuarios</li>
+                <li class="nav-tab" data-section="vuelos">Vuelos</li>
+                <li class="nav-tab" data-section="naves">Naves</li>
             </ul>
         `;
         
@@ -56,8 +56,8 @@ function setupNavigation() {
     } else if (currentRole === 'gestor') {
         nav.innerHTML = `
             <ul class="nav-tabs">
-                <li class="nav-tab active" data-section="reservas">📋 Reservas</li>
-                <li class="nav-tab" data-section="vuelos">✈️ Consultar Vuelos</li>
+                <li class="nav-tab active" data-section="reservas">Reservas</li>
+                <li class="nav-tab" data-section="vuelos">Consultar Vuelos</li>
             </ul>
         `;
         
@@ -99,7 +99,7 @@ async function loadUsuarios() {
     const content = document.getElementById('content');
     content.innerHTML = `
         <div class="section-header">
-            <h2>👥 Gestión de Usuarios</h2>
+            <h2>Gestión de Usuarios</h2>
             <button class="btn-primary" onclick="window.dashboard.openUserModal()">+ Crear Usuario</button>
         </div>
         <div class="table-container">
@@ -196,18 +196,15 @@ function openUserModal(userId = null) {
     
     document.body.appendChild(modal);
     
-    // Si es edición, cargar datos
     if (userId) {
         loadUserData(userId, modal);
     }
-    
-    // Submit handler
+
     document.getElementById('userForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
-        
-        // Si es edición y password está vacío, no enviarlo
+
         if (userId && !data.password) {
             delete data.password;
         }
@@ -251,7 +248,7 @@ async function loadNaves() {
     const content = document.getElementById('content');
     content.innerHTML = `
         <div class="section-header">
-            <h2>🛩️ Gestión de Naves</h2>
+            <h2>Gestión de Naves</h2>
             <button class="btn-primary" onclick="window.dashboard.openNaveModal()">+ Crear Nave</button>
         </div>
         <div class="table-container">
@@ -401,25 +398,25 @@ async function loadVuelos() {
     
     content.innerHTML = `
         <div class="section-header">
-            <h2>✈️ ${isAdmin ? 'Gestión de' : 'Consulta de'} Vuelos</h2>
+            <h2>${isAdmin ? 'Gestión de' : 'Consulta de'} Vuelos</h2>
             ${isAdmin ? '<button class="btn-primary" onclick="window.dashboard.openFlightModal()">+ Crear Vuelo</button>' : ''}
         </div>
         
         <!-- Filtros de búsqueda (Requerimiento 2.3) -->
         <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;">🔍 Buscar Vuelos</h3>
+            <h3 style="margin-bottom: 15px;">Buscar Vuelos</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <div class="form-group">
                     <label>Origen</label>
-                    <input type="text" id="searchOrigin" placeholder="Ej: Bogotá" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                    <input type="text" id="searchOrigin" placeholder="Ej: Bogotá" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Science Gothic', sans-serif;">
                 </div>
                 <div class="form-group">
                     <label>Destino</label>
-                    <input type="text" id="searchDestination" placeholder="Ej: Medellín" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                    <input type="text" id="searchDestination" placeholder="Ej: Medellín" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Science Gothic', sans-serif;">
                 </div>
                 <div class="form-group">
                     <label>Fecha</label>
-                    <input type="date" id="searchDate" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                    <input type="date" id="searchDate" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Science Gothic', sans-serif;">
                 </div>
                 <div style="display: flex; align-items: flex-end; gap: 10px;">
                     <button class="btn-primary" onclick="window.dashboard.searchFlights()" style="width: 100%;">Buscar</button>
@@ -529,7 +526,6 @@ function displayFlights(flights, isAdmin) {
 }
 
 async function openFlightModal(flightId = null) {
-    // Primero obtener las naves disponibles
     let naves = [];
     try {
         naves = await fetchAPI(`${API_AIRLINE}/naves`, { method: 'GET' });
@@ -623,8 +619,7 @@ async function loadFlightData(flightId, modal) {
             modal.querySelector('[name="nave_id"]').value = flight.nave_id;
             modal.querySelector('[name="origin"]').value = flight.origin;
             modal.querySelector('[name="destination"]').value = flight.destination;
-            
-            // Convertir a formato datetime-local
+
             const departure = new Date(flight.departure);
             modal.querySelector('[name="departure"]').value = departure.toISOString().slice(0, 16);
             
@@ -649,22 +644,21 @@ async function deleteFlight(flightId) {
     }
 }
 
-// ========== RESERVAS ==========
 async function loadReservas() {
     const content = document.getElementById('content');
     content.innerHTML = `
         <div class="section-header">
-            <h2>📋 Gestión de Reservas</h2>
+            <h2>Gestión de Reservas</h2>
             <button class="btn-primary" onclick="window.dashboard.openReservationModal()">+ Nueva Reserva</button>
         </div>
         
         <!-- Filtros de búsqueda (Requerimiento 4.3) -->
         <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;">🔍 Filtrar Reservas</h3>
+            <h3 style="margin-bottom: 15px;">Filtrar Reservas</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                 <div class="form-group">
                     <label>ID de Usuario</label>
-                    <input type="number" id="filterUserId" placeholder="Ej: 2" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                    <input type="number" id="filterUserId" placeholder="Ej: 2" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Science Gothic', sans-serif;">
                 </div>
                 <div style="display: flex; align-items: flex-end; gap: 10px;">
                     <button class="btn-primary" onclick="window.dashboard.searchReservations()" style="width: 100%;">Buscar</button>
@@ -729,8 +723,7 @@ async function displayReservations(reservations) {
         `;
         return;
     }
-    
-    // Obtener información de vuelos y usuarios para mostrar detalles
+
     let flights = [];
     let users = [];
     
@@ -742,7 +735,6 @@ async function displayReservations(reservations) {
     
     const flightsMap = {};
     flights.forEach(f => flightsMap[f.id] = f);
-    // Construir filas de la tabla
     const rows = reservations.map(res => {
         const flight = flightsMap[res.flight_id] || {};
         const price = flight.price ? parseFloat(flight.price).toLocaleString() : 'N/A';
@@ -793,7 +785,7 @@ async function displayReservations(reservations) {
         </table>
         <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; text-align: center;">
             <p style="margin: 0; font-size: 0.9rem;">
-                📊 Total de reservas: <strong>${reservations.length}</strong> | 
+                Total de reservas: <strong>${reservations.length}</strong> | 
                 Activas: <strong>${reservations.filter(r => r.status === 'activa').length}</strong> | 
                 Canceladas: <strong>${reservations.filter(r => r.status === 'cancelada').length}</strong>
             </p>
@@ -802,7 +794,6 @@ async function displayReservations(reservations) {
 }
 
 async function openReservationModal() {
-    // Obtener solo los vuelos disponibles
     let flights = [];
     
     try {
@@ -836,7 +827,7 @@ async function openReservationModal() {
                 </div>
                 <div style="background: rgba(100, 200, 255, 0.2); padding: 15px; border-radius: 10px; margin-top: 10px;">
                     <p style="margin: 0; font-size: 0.9rem;">
-                        ℹ️ La reserva se creará a tu nombre automáticamente
+                        La reserva se creará a tu nombre automáticamente
                     </p>
                 </div>
                 <div class="btn-container">
@@ -853,16 +844,14 @@ async function openReservationModal() {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
-        
-        // No enviamos user_id, el backend lo asignará automáticamente
-        
+
         try {
             await fetchAPI(`${API_AIRLINE}/reservations`, {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
             modal.remove();
-            alert('✅ Reserva creada exitosamente');
+            alert('Reserva creada exitosamente');
             loadReservas();
         } catch (error) {
             alert('Error: ' + error.message);
@@ -885,18 +874,15 @@ async function cancelReservation(reservationId) {
 
 async function logout() {
     try {
-        // 1.4 - Llamar al backend para eliminar el token
         await fetchAPI(`${API_USERS}/logout`, { method: 'POST' });
     } catch (error) {
         console.error('Error al cerrar sesión:', error);
     } finally {
-        // Limpiar localStorage y redirigir
         localStorage.clear();
         window.location.href = 'index.html';
     }
 }
 
-// Exponer funciones globalmente para los onclick
 window.dashboard = {
     openUserModal,
     editUser: (id) => openUserModal(id),
@@ -914,5 +900,4 @@ window.dashboard = {
     cancelReservation
 };
 
-// Iniciar
 init();

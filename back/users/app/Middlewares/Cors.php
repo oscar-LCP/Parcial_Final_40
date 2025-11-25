@@ -8,7 +8,6 @@ use Slim\Psr7\Response;
 
 class Cors {
     public function __invoke(Request $request, Handler $handler): ResponseInterface {
-        // Si es una petición OPTIONS (preflight), responder inmediatamente
         if ($request->getMethod() === 'OPTIONS') {
             $response = new Response();
             return $response->withStatus(200)
@@ -17,7 +16,6 @@ class Cors {
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         }
 
-        // Para peticiones normales, procesar y agregar headers
         $response = $handler->handle($request);
         
         return $response

@@ -1,11 +1,7 @@
-// js/utils.js
-
-// Obtiene token de localStorage
 export function getToken() {
     return localStorage.getItem('token');
 }
 
-// Fetch con token y headers adecuados para JSON
 export async function fetchAPI(url, options = {}) {
     const token = getToken();
     const headers = {
@@ -18,8 +14,7 @@ export async function fetchAPI(url, options = {}) {
     };
     
     const response = await fetch(url, opts);
-    
-    // 5.5 - Redirigir a login si el token es inválido o no existe (401)
+
     if (response.status === 401) {
         localStorage.clear();
         window.location.href = 'index.html';
