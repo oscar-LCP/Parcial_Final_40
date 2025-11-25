@@ -657,6 +657,22 @@ async function loadReservas() {
             <h2>📋 Gestión de Reservas</h2>
             <button class="btn-primary" onclick="window.dashboard.openReservationModal()">+ Nueva Reserva</button>
         </div>
+        
+        <!-- Filtros de búsqueda (Requerimiento 4.3) -->
+        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">🔍 Filtrar Reservas</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div class="form-group">
+                    <label>ID de Usuario</label>
+                    <input type="number" id="filterUserId" placeholder="Ej: 2" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.15); color: #fff; font-family: 'Orbitron', sans-serif;">
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <button class="btn-primary" onclick="window.dashboard.searchReservations()" style="width: 100%;">Buscar</button>
+                    <button class="btn-secondary" onclick="window.dashboard.clearSearchReservations()" style="width: 100%;">Limpiar</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="table-container">
             <div class="loading">Cargando reservas...</div>
         </div>
@@ -664,47 +680,7 @@ async function loadReservas() {
     
     try {
         const reservations = await fetchAPI(`${API_AIRLINE}/reservations`, { method: 'GET' });
-        
-        if (reservations.length === 0) {
-            content.querySelector('.table-container').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <p>No hay reservas registradas</p>
-                </div>
-            `;
-            return;
-        }
-        
-        content.querySelector('.table-container').innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario ID</th>
-                        <th>Vuelo ID</th>
-                        <th>Estado</th>
-                        <th>Fecha Reserva</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${reservations.map(res => `
-                        <tr>
-                            <td>${res.id}</td>
-                            <td>${res.user_id}</td>
-                            <td>${res.flight_id}</td>
-                            <td>${res.status}</td>
-                            <td>${new Date(res.reserved_at).toLocaleString()}</td>
-                            <td class="actions">
-                                ${res.status === 'activa' ? 
-                                    `<button class="btn-danger btn-small" onclick="window.dashboard.cancelReservation(${res.id})">Cancelar</button>` 
-                                    : '<span style="opacity:0.5;">Cancelada</span>'}
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        await displayReservations(reservations);
     } catch (error) {
         content.querySelector('.table-container').innerHTML = `
             <div class="empty-state">
@@ -714,16 +690,125 @@ async function loadReservas() {
     }
 }
 
-async function openReservationModal() {
-    // Obtener usuarios y vuelos
+async function searchReservations() {
+    const userId = document.getElementById('filterUserId').value.trim();
+    
+    const params = new URLSearchParams();
+    if (userId) params.append('user_id', userId);
+    
+    const content = document.getElementById('content');
+    content.querySelector('.table-container').innerHTML = '<div class="loading">Buscando reservas...</div>';
+    
+    try {
+        const url = `${API_AIRLINE}/reservations${params.toString() ? '?' + params.toString() : ''}`;
+        const reservations = await fetchAPI(url, { method: 'GET' });
+        await displayReservations(reservations);
+    } catch (error) {
+        content.querySelector('.table-container').innerHTML = `
+            <div class="empty-state">
+                <p style="color: #ff6b6b;">Error: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+function clearSearchReservations() {
+    document.getElementById('filterUserId').value = '';
+    loadReservas();
+}
+
+async function displayReservations(reservations) {
+    const content = document.getElementById('content');
+    
+    if (reservations.length === 0) {
+        content.querySelector('.table-container').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>No se encontraron reservas</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Obtener información de vuelos y usuarios para mostrar detalles
+    let flights = [];
     let users = [];
+    
+    try {
+        flights = await fetchAPI(`${API_AIRLINE}/flights`, { method: 'GET' });
+    } catch (error) {
+        console.error('Error cargando vuelos:', error);
+    }
+    
+    const flightsMap = {};
+    flights.forEach(f => flightsMap[f.id] = f);
+    // Construir filas de la tabla
+    const rows = reservations.map(res => {
+        const flight = flightsMap[res.flight_id] || {};
+        const price = flight.price ? parseFloat(flight.price).toLocaleString() : 'N/A';
+        const origin = flight.origin || 'N/A';
+        const destination = flight.destination || 'N/A';
+        const departure = flight.departure ? new Date(flight.departure).toLocaleString() : 'N/A';
+        const statusLabel = res.status === 'activa' ? '✓ Activa' : '✕ Cancelada';
+        const statusBg = res.status === 'activa' ? 'rgba(100, 200, 100, 0.3)' : 'rgba(255, 100, 100, 0.3)';
+        const action = res.status === 'activa' ? `<button class="btn-danger btn-small" onclick="window.dashboard.cancelReservation(${res.id})">Cancelar</button>` : '<span style="opacity:0.5;">—</span>';
+
+        return `
+            <tr>
+                <td><strong>#${res.id}</strong></td>
+                <td>Usuario #${res.user_id}</td>
+                <td>Vuelo #${res.flight_id}</td>
+                <td>${origin} → ${destination}</td>
+                <td>${departure}</td>
+                <td>${price}</td>
+                <td>
+                    <span style="padding: 5px 10px; border-radius: 12px; background: ${statusBg}; font-weight: 600; font-size: 0.85rem;">
+                        ${statusLabel}
+                    </span>
+                </td>
+                <td>${new Date(res.reserved_at).toLocaleString()}</td>
+                <td class="actions">${action}</td>
+            </tr>
+        `;
+    }).join('');
+
+    content.querySelector('.table-container').innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Reserva</th>
+                    <th>Usuario ID</th>
+                    <th>Vuelo</th>
+                    <th>Origen → Destino</th>
+                    <th>Fecha Vuelo</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Fecha Reserva</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+            </tbody>
+        </table>
+        <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; text-align: center;">
+            <p style="margin: 0; font-size: 0.9rem;">
+                📊 Total de reservas: <strong>${reservations.length}</strong> | 
+                Activas: <strong>${reservations.filter(r => r.status === 'activa').length}</strong> | 
+                Canceladas: <strong>${reservations.filter(r => r.status === 'cancelada').length}</strong>
+            </p>
+        </div>
+    `;
+}
+
+async function openReservationModal() {
+    // Obtener solo los vuelos disponibles
     let flights = [];
     
     try {
-        users = await fetchAPI(`${API_USERS}/users`, { method: 'GET' });
         flights = await fetchAPI(`${API_AIRLINE}/flights`, { method: 'GET' });
     } catch (error) {
-        alert('Error cargando datos: ' + error.message);
+        alert('Error cargando vuelos: ' + error.message);
         return;
     }
     
@@ -737,22 +822,22 @@ async function openReservationModal() {
             </div>
             <form class="modal-form" id="reservationForm">
                 <div class="form-group">
-                    <label>Usuario</label>
-                    <select name="user_id" required>
-                        <option value="">Seleccione un usuario</option>
-                        ${users.map(user => `
-                            <option value="${user.id}">${user.name} (${user.email})</option>
-                        `).join('')}
-                    </select>
-                </div>
-                <div class="form-group">
                     <label>Vuelo</label>
                     <select name="flight_id" required>
                         <option value="">Seleccione un vuelo</option>
                         ${flights.map(flight => `
-                            <option value="${flight.id}">${flight.origin} → ${flight.destination} (${new Date(flight.departure).toLocaleDateString()})</option>
+                            <option value="${flight.id}">
+                                ${flight.origin} → ${flight.destination} 
+                                (${new Date(flight.departure).toLocaleDateString()}) 
+                                - ${parseFloat(flight.price).toLocaleString()}
+                            </option>
                         `).join('')}
                     </select>
+                </div>
+                <div style="background: rgba(100, 200, 255, 0.2); padding: 15px; border-radius: 10px; margin-top: 10px;">
+                    <p style="margin: 0; font-size: 0.9rem;">
+                        ℹ️ La reserva se creará a tu nombre automáticamente
+                    </p>
                 </div>
                 <div class="btn-container">
                     <button type="submit" class="btn-primary">Crear Reserva</button>
@@ -769,12 +854,15 @@ async function openReservationModal() {
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
         
+        // No enviamos user_id, el backend lo asignará automáticamente
+        
         try {
             await fetchAPI(`${API_AIRLINE}/reservations`, {
                 method: 'POST',
                 body: JSON.stringify(data)
             });
             modal.remove();
+            alert('✅ Reserva creada exitosamente');
             loadReservas();
         } catch (error) {
             alert('Error: ' + error.message);
@@ -820,6 +908,8 @@ window.dashboard = {
     deleteFlight,
     searchFlights,
     clearSearchFlights,
+    searchReservations,
+    clearSearchReservations,
     openReservationModal,
     cancelReservation
 };

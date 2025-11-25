@@ -138,6 +138,9 @@ class AirlineController {
         
         $data = (array)$request->getParsedBody();
         
+        // Asignar automáticamente el user_id del gestor autenticado
+        $data['user_id'] = $user->id;
+        
         // Validar que el vuelo exista
         $flight = Flight::find($data['flight_id']);
         if (!$flight) {
@@ -157,14 +160,17 @@ class AirlineController {
             return $this->forbidden($response);
         }
         
+        // El gestor puede ver todas las reservas
         $params = $request->getQueryParams();
         $query = Reservation::query();
         
+        // Filtrar por user_id si se proporciona (Requerimiento 4.3)
         if (!empty($params['user_id'])) {
             $query->where('user_id', $params['user_id']);
         }
         
-        $reservations = $query->get();
+        $reservations = $query->orderBy('id', 'desc')->get();
+        
         $response->getBody()->write(json_encode($reservations));
         return $response->withHeader('Content-Type', 'application/json');
     }
@@ -180,6 +186,7 @@ class AirlineController {
             return $this->notFound($response);
         }
         
+        // El gestor puede cancelar cualquier reserva
         $reservation->update(['status' => 'cancelada']);
         $response->getBody()->write(json_encode(['message' => 'Reserva cancelada']));
         return $response->withHeader('Content-Type', 'application/json');
