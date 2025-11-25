@@ -98,6 +98,36 @@ h1, h2 {
     color: #fff;
 }
 
+/* Estilos para select en general */
+select {
+    color: #fff !important;
+    background: rgba(255,255,255,0.25) !important;
+}
+
+select option {
+    background: #2d3748 !important;
+    color: #fff !important;
+    padding: 10px;
+}
+
+/* Para navegadores webkit (Chrome, Safari, Edge) */
+select::-webkit-scrollbar {
+    width: 10px;
+}
+
+select::-webkit-scrollbar-track {
+    background: #1a202c;
+}
+
+select::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 5px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+    background: #718096;
+}
+
 .btn-container {
     display: flex;
     justify-content: center;
